@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>英语单词消消乐 - 春季多讲次</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            background: linear-gradient(145deg, #fef5e6 0%, #fff0df 100%);
+            font-family: 'PingFang SC', 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
+            padding: 16px 12px 30px;
+            min-height: 100vh;
+        }
+        /* 主容器 */
+        .game-wrap {
+            max-width: 550px;
+            margin: 0 auto;
+        }
+        /* 头部 */
+        .game-header {
+            text-align: center;
+            margin-bottom: 12px;
+        }
+        .game-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f09819, #ff6b4a);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+        }
+        .lecture-tag {
+            background: #ffffffcc;
+            backdrop-filter: blur(4px);
+            display: inline-block;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #c97e2c;
+            margin-top: 6px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        }
+        /* 计分栏 */
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            background: #ffffffcc;
+            backdrop-filter: blur(8px);
+            border-radius: 60px;
+            padding: 10px 20px;
+            margin: 16px 0;
+            gap: 12px;
+            border: 1px solid #ffefcf;
+        }
+        .score, .timer {
+            background: #fff3e6;
+            border-radius: 50px;
+            padding: 6px 16px;
+            text-align: center;
+            flex: 1;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #e67e22;
+        }
+        .score span, .timer span {
+            font-size: 0.7rem;
+            display: block;
+            font-weight: 500;
+            color: #b45a2b;
+        }
+        .timer {
+            color: #2c6e9e;
+        }
+        /* 讲次导航（横向滑动） */
+        .nav-slider {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 6px 0 14px;
+            margin-bottom: 4px;
+            scrollbar-width: thin;
+        }
+        .lecture-btn {
+            background: #ffefdb;
+            border: none;
+            padding: 8px 22px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #bc702e;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: 0.1s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .lecture-btn:active { transform: scale(0.96); background: #ffe2bf; }
+        /* 操作栏 */
+        .action-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin: 10px 0 20px;
+        }
+        .reset {
+            background: #ffd89a;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 40px;
+            font-weight: 600;
+            color: #a55217;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            font-size: 0.9rem;
+        }
+        .reset:active { transform: scale(0.97); }
+        .message {
+            background: #f7e5cd;
+            padding: 8px 16px;
+            border-radius: 32px;
+            font-size: 0.75rem;
+            color: #bc702e;
+            flex: 1;
+            text-align: center;
+        }
+        /* 词云区域 — 泡泡单词 */
+        .word-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 14px;
+            margin-top: 8px;
+            padding: 8px 0 20px;
+        }
+        /* 单词卡片样式（泡泡风格） */
+        .word-card {
+            background: linear-gradient(135deg, #fff5e8, #ffe6d0);
+            border-radius: 60px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.1s ease;
+            box-shadow: 0 6px 12px -5px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            min-width: 80px;
+            touch-action: manipulation;
+            border: 1px solid #fff2e2;
+        }
+        /* 英文单词： 蓝色清新 */
+        .word-card.eng {
+            background: linear-gradient(135deg, #b7e0ff, #8bcbff);
+            color: #1f4b6e;
+            box-shadow: 0 5px 10px rgba(55, 94, 148, 0.12);
+        }
+        /* 中文单词：暖橙色 */
+        .word-card.chn {
+            background: linear-gradient(135deg, #ffdeb3, #ffcd94);
+            color: #8a4f1c;
+        }
+        /* 选中高亮 */
+        .word-card.selected {
+            transform: scale(0.94);
+            background: #ffe0a3;
+            box-shadow: 0 0 0 3px #f9b953;
+            color: #a55217;
+        }
+        /* 消除后隐藏 */
+        .word-card.eliminated {
+            visibility: hidden;
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.7);
+            transition: visibility 0.15s, opacity 0.15s;
+        }
+        /* 错误抖动 */
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+            100% { transform: translateX(0); }
+        }
+        .error-shake {
+            animation: shake 0.2s ease-in-out 0s 2;
+            background: #ffb5a7 !important;
+        }
+        /* 结束弹窗 */
+        .end-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(255, 245, 230, 0.96);
+            backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        .end-card {
+            background: #fff7ef;
+            border-radius: 56px;
+            padding: 30px 35px;
+            text-align: center;
+            width: 80%;
+            max-width: 280px;
+            border: 2px solid #ffcd94;
+        }
+        .end-card h2 { color: #e67e22; margin-bottom: 12px; }
+        .end-card button {
+            background: #f7b05e;
+            border: none;
+            padding: 10px 26px;
+            border-radius: 50px;
+            font-weight: bold;
+            color: white;
+            margin-top: 12px;
+            cursor: pointer;
+        }
+        @media (max-width: 500px) {
+            .word-card { padding: 8px 16px; font-size: 0.9rem; min-width: 70px; }
+            .game-title { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="game-wrap">
+    <div class="game-header">
+        <div class="game-title" id="gameTitle">📖 英语单词消消乐</div>
+        <div class="lecture-tag" id="lectureTag">第3讲 · 心灵奇旅</div>
+    </div>
+
+    <!-- 讲次导航 -->
+    <div class="nav-slider" id="navSlider"></div>
+
+    <div class="stats">
+        <div class="score"><span>🏆 得分</span> <span id="scoreValue">0</span></div>
+        <div class="timer"><span>⏱️ 剩余</span> <span id="timerValue">02:00</span></div>
+    </div>
+
+    <div class="action-bar">
+        <button class="reset" id="resetBtn">🔄 洗牌重置</button>
+        <div class="message" id="statusMsg">✨ 点击英文，再点中文 ✨</div>
+    </div>
+
+    <div class="word-cloud" id="wordsContainer"></div>
+</div>
+
+<script>
+    // ----------------------------- 单词库（多讲次，可无限扩展）--------------------------------
+    const LECTURES = {
+        1: { title: "第1讲 · 玩具总动员", words: [{ eng: "seat", chn: "座位" }, { eng: "beat", chn: "击打" }, { eng: "cheat", chn: "欺骗" }, { eng: "repeat", chn: "重复" }, { eng: "discuss", chn: "v. 讨论" }, { eng: "discussion", chn: "n. 讨论" }, { eng: "cycle", chn: "骑自行车" }, { eng: "recycle", chn: "回收利用" }, { eng: "raise", chn: "举起；抚养；筹集；提出" }, { eng: "praise", chn: "表扬" }, { eng: "serious", chn: "严肃的" }, { eng: "curious", chn: "好奇的" }, { eng: "polite", chn: "有礼貌的" }, { eng: "impolite", chn: "无礼的" }] },
+        3: { title: "第3讲 · 心灵奇旅", words: [{ eng: "clock", chn: "钟" }, { eng: "block", chn: "街区" }, { eng: "knock", chn: "敲" }, { eng: "shock", chn: "震惊" }, { eng: "joke", chn: "笑话" }, { eng: "smoke", chn: "吸烟" }, { eng: "voice", chn: "嗓音" }, { eng: "choice", chn: "选择" }, { eng: "pain", chn: "疼痛" }, { eng: "main", chn: "主要的" }, { eng: "remain", chn: "保持" }, { eng: "accident", chn: "事故" }, { eng: "president", chn: "总统" }] }
+    };
+
+    let currentLectureId = 3;          // 默认第3讲
+    let currentWords = [];              // 存储当前讲次的配对 [{eng, chn}]
+    let items = [];                     // 卡片数组 { id, groupId, type, text, eliminated }
+    let selectedId = null;
+    let score = 0;
+    let timeLeft = 120;                 // 2分钟 = 120秒
+    let timer = null;
+    let gameActive = true;
+
+    // DOM
+    const titleEl = document.getElementById('gameTitle');
+    const lectureTag = document.getElementById('lectureTag');
+    const navSlider = document.getElementById('navSlider');
+    const scoreSpan = document.getElementById('scoreValue');
+    const timerSpan = document.getElementById('timerValue');
+    const resetBtn = document.getElementById('resetBtn');
+    const statusMsg = document.getElementById('statusMsg');
+    const container = document.getElementById('wordsContainer');
+
+    // 音效 (轻量)
+    let audioCtx = null;
+    function beep(freq) {
+        if (!audioCtx) return;
+        try {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.value = freq;
+            gain.gain.value = 0.12;
+            gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.3);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.25);
+        } catch(e) {}
+    }
+    function playCorrect() { beep(880); }
+    function playWrong() { beep(520); }
+
+    // 辅助：洗牌
+    function shuffle(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    // 根据当前单词构建卡片（英文+中文混合乱序）
+    function buildItems() {
+        const newItems = [];
+        let idx = 0;
+        currentWords.forEach((pair, gid) => {
+            newItems.push({ id: idx++, groupId: gid, type: 'eng', text: pair.eng, eliminated: false });
+            newItems.push({ id: idx++, groupId: gid, type: 'chn', text: pair.chn, eliminated: false });
+        });
+        return shuffle(newItems);
+    }
+
+    // 渲染词云
+    function renderCloud() {
+        container.innerHTML = '';
+        items.forEach(item => {
+            const chip = document.createElement('div');
+            chip.className = `word-card ${item.type}`;
+            if (item.eliminated) chip.classList.add('eliminated');
+            if (selectedId === item.id && !item.eliminated) chip.classList.add('selected');
+            chip.textContent = item.text;
+            chip.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (!gameActive || item.eliminated) return;
+                onCardClick(item.id);
+            });
+            container.appendChild(chip);
+        });
+    }
+
+    // 核心配对逻辑
+    function onCardClick(clickId) {
+        if (!gameActive) return;
+        const clicked = items.find(i => i.id === clickId);
+        if (!clicked || clicked.eliminated) return;
+
+        if (selectedId === null) {
+            selectedId = clicked.id;
+            renderCloud();
+            statusMsg.innerText = `🔍 已选: ${clicked.text}`;
+            return;
+        }
+
+        const selected = items.find(i => i.id === selectedId);
+        if (!selected || selected.eliminated) {
+            selectedId = null;
+            renderCloud();
+            return;
+        }
+        if (selected.id === clicked.id) {
+            selectedId = null;
+            renderCloud();
+            statusMsg.innerText = '✨ 已取消选择';
+            return;
+        }
+
+        // 检查配对：类型不同且属于同一个单词组
+        const isMatch = (selected.type !== clicked.type && selected.groupId === clicked.groupId);
+        if (isMatch) {
+            selected.eliminated = true;
+            clicked.eliminated = true;
+            score += 10;
+            updateScoreUI();
+            playCorrect();
+            statusMsg.innerText = `✅ 配对成功 +10分 (${selected.text} ↔ ${clicked.text})`;
+            selectedId = null;
+            renderCloud();
+            const allGone = items.every(i => i.eliminated === true);
+            if (allGone) gameVictory();
+        } else {
+            score = Math.max(0, score - 2);
+            updateScoreUI();
+            playWrong();
+            statusMsg.innerText = `❌ 配对错误 -2分 (${selected.text} ≠ ${clicked.text})`;
+            // 抖动特效
+            const allDivs = document.querySelectorAll('.word-card');
+            allDivs.forEach(div => {
+                if (div.textContent === selected.text || div.textContent === clicked.text) {
+                    div.classList.add('error-shake');
+                    setTimeout(() => div.classList.remove('error-shake'), 300);
+                }
+            });
+            selectedId = null;
+            renderCloud();
+        }
+    }
+
+    function updateScoreUI() { scoreSpan.innerText = score; }
+    function updateTimerUI() {
+        const mins = Math.floor(timeLeft / 60);
+        const secs = timeLeft % 60;
+        timerSpan.innerText = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+    }
+
+    function startCountdown() {
+        if (timer) clearInterval(timer);
+        timer = setInterval(() => {
+            if (!gameActive) return;
+            if (timeLeft <= 1) {
+                if (timer) clearInterval(timer);
+                gameActive = false;
+                statusMsg.innerText = '⏰ 时间结束！';
+                renderCloud();
+                showGameOver(false);
+            } else {
+                timeLeft--;
+                updateTimerUI();
+            }
+        }, 1000);
+    }
+
+    function gameVictory() {
+        if (timer) clearInterval(timer);
+        gameActive = false;
+        statusMsg.innerText = '🎉 胜利！单词全配对 🎉';
+        showGameOver(true);
+    }
+
+    function showGameOver(isWin) {
+        if (document.querySelector('.end-overlay')) return;
+        const overlay = document.createElement('div');
+        overlay.className = 'end-overlay';
+        overlay.innerHTML = `<div class="end-card">
+            <h2>${isWin ? '🏆 闯关成功' : '⏰ 时间用完'}</h2>
+            <p>得分: ${score}</p>
+            <button id="restartEndBtn">再来一次</button>
+        </div>`;
+        document.body.appendChild(overlay);
+        document.getElementById('restartEndBtn').onclick = () => {
+            overlay.remove();
+            resetGame();
+        };
+    }
+
+    function resetGame() {
+        if (timer) clearInterval(timer);
+        const ov = document.querySelector('.end-overlay');
+        if (ov) ov.remove();
+        selectedId = null;
+        score = 0;
+        timeLeft = 120;                 // 重置为2分钟
+        gameActive = true;
+        updateScoreUI();
+        updateTimerUI();
+        items = buildItems();
+        renderCloud();
+        startCountdown();
+        statusMsg.innerText = '🃏 已重置，开始配对！';
+    }
+
+    // 切换讲次
+    function switchLecture(lectureId) {
+        if (!LECTURES[lectureId]) return;
+        if (timer) clearInterval(timer);
+        currentLectureId = lectureId;
+        const data = LECTURES[currentLectureId];
+        currentWords = data.words.map(pair => ({ eng: pair.eng, chn: pair.chn }));
+        titleEl.innerHTML = `📖 英语单词消消乐 · ${data.title}`;
+        lectureTag.innerHTML = `🎯 ${data.title}`;
+        // 重置所有状态
+        selectedId = null;
+        score = 0;
+        timeLeft = 120;                 // 切换讲次后也是2分钟
+        gameActive = true;
+        updateScoreUI();
+        updateTimerUI();
+        items = buildItems();
+        renderCloud();
+        startCountdown();
+        statusMsg.innerText = `已切换到「${data.title}」`;
+        const ov = document.querySelector('.end-overlay');
+        if (ov) ov.remove();
+    }
+
+    // 构建导航按钮
+    function buildLectureNav() {
+        navSlider.innerHTML = '';
+        Object.keys(LECTURES).sort((a,b)=>a-b).forEach(lid => {
+            const btn = document.createElement('button');
+            btn.textContent = `第${lid}讲`;
+            btn.classList.add('lecture-btn');
+            btn.addEventListener('click', () => switchLecture(parseInt(lid)));
+            navSlider.appendChild(btn);
+        });
+    }
+
+    // 初始化页面 (读取URL参数可选)
+    function init() {
+        buildLectureNav();
+        const urlParams = new URLSearchParams(window.location.search);
+        const lidParam = parseInt(urlParams.get('lecture'));
+        if (lidParam && LECTURES[lidParam]) currentLectureId = lidParam;
+        else currentLectureId = 3;
+        const data = LECTURES[currentLectureId];
+        currentWords = data.words.map(pair => ({ eng: pair.eng, chn: pair.chn }));
+        titleEl.innerHTML = `📖 英语单词消消乐 · ${data.title}`;
+        lectureTag.innerHTML = `🎯 ${data.title}`;
+        items = buildItems();
+        renderCloud();
+        updateScoreUI();
+        updateTimerUI();
+        startCountdown();
+        // 音频准备
+        document.body.addEventListener('click', () => {
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+        }, { once: true });
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    resetBtn.onclick = resetGame;
+    init();
+</script>
+</body>
+</html>
