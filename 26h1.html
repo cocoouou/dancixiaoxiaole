@@ -14,14 +14,13 @@
         }
         body {
             background: linear-gradient(145deg, #fef5e6 0%, #fff0df 100%);
-            /* 修改点2：字体调整 - 中文字体微软雅黑，英文字体Arial */
             font-family: '微软雅黑', 'Microsoft YaHei', 'Arial', 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
             padding: 16px 12px 30px;
             min-height: 100vh;
             position: relative;
         }
         
-        /* ========= 固定左上角 Logo 区域（完全保留，未修改） ========= */
+        /* ========= 固定左上角 Logo 区域 ========= */
         .fixed-logo {
             position: fixed;
             top: 16px;
@@ -53,7 +52,6 @@
             object-fit: contain;
             display: block;
         }
-        /* 如果图片加载失败，显示占位符 */
         .fixed-logo .logo-placeholder {
             font-size: 28px;
             font-weight: 600;
@@ -64,7 +62,7 @@
             line-height: 1;
         }
         
-        /* 主容器微调，避免被遮挡（移动端留出左侧空间） */
+        /* 主容器 */
         .game-wrap {
             max-width: 550px;
             margin: 0 auto;
@@ -72,14 +70,15 @@
             z-index: 1;
         }
         
-        /* 头部区域 - 修改点1：标题改为两行 */
+        /* 头部区域 */
         .game-header {
             text-align: center;
             margin-bottom: 12px;
             margin-left: 0;
             margin-right: 0;
         }
-        /* 第一行标题 */
+        
+        /* 标题 - 只加两侧装饰，其他完全不变 */
         .game-title-main {
             font-size: 1.8rem;
             font-weight: 800;
@@ -89,14 +88,37 @@
             color: transparent;
             letter-spacing: -0.3px;
             font-family: '微软雅黑', 'Microsoft YaHei', 'Arial', sans-serif;
-            margin-bottom: 4px;
+            margin-bottom: 8px;
+            display: inline-block;
         }
+        
+        /* 装饰星星 - 只加这个 */
+        .star {
+            display: inline-block;
+            font-size: 1.5rem;
+            background: none;
+            color: #f5a623;
+            text-shadow: 0 0 4px #ffd700;
+            animation: twinkle 1.2s ease-in-out infinite;
+        }
+        .star-left {
+            margin-right: 8px;
+        }
+        .star-right {
+            margin-left: 8px;
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.1); }
+        }
+        
         /* 第二行讲次标题 */
         .game-title-sub {
-            font-size: 1.2rem;
-            font-weight: 600;
+            font-size: 1.1rem;
+            font-weight: 500;
             color: #c97e2c;
             font-family: '微软雅黑', 'Microsoft YaHei', 'Arial', sans-serif;
+            margin-top: 4px;
         }
         .lecture-tag {
             display: none;
@@ -291,7 +313,8 @@
         @media (max-width: 500px) {
             .word-card { padding: 8px 16px; font-size: 0.9rem; min-width: 70px; }
             .game-title-main { font-size: 1.5rem; }
-            .game-title-sub { font-size: 1rem; }
+            .star { font-size: 1.2rem; }
+            .game-title-sub { font-size: 0.9rem; }
             .fixed-logo {
                 width: 40px;
                 height: 40px;
@@ -303,16 +326,20 @@
 </head>
 <body>
 
-<!-- ========= 左上角固定 Logo 区域（完全保留，未修改） ========= -->
+<!-- ========= 左上角固定 Logo 区域 ========= -->
 <div class="fixed-logo" id="logoArea" title="返回首页 / 品牌标识">
     <img id="logoImg" src="./logo.png">
 </div>
 
 <div class="game-wrap">
     <div class="game-header">
-        <!-- 修改点1：第一行：有道英语单词消消乐 -->
-        <div class="game-title-main">📖 有道英语单词消消乐</div>
-        <!-- 修改点1：第二行：第3讲 · 心灵奇旅 -->
+        <!-- 标题：只在两侧加星星装饰，其他完全不变 -->
+        <div class="game-title-main">
+            <span class="star star-left">✨</span>
+            有道英语单词消消乐
+            <span class="star star-right">✨</span>
+        </div>
+        <!-- 第二行讲次标题 -->
         <div class="game-title-sub">第3讲 · 心灵奇旅</div>
         <div class="lecture-tag" id="lectureTag">第3讲 · 心灵奇旅</div>
     </div>
@@ -340,17 +367,16 @@
         3: { title: "第3讲 · 心灵奇旅", words: [{ eng: "clock", chn: "钟" }, { eng: "block", chn: "街区" }, { eng: "knock", chn: "敲" }, { eng: "shock", chn: "震惊" }, { eng: "joke", chn: "笑话" }, { eng: "smoke", chn: "吸烟" }, { eng: "voice", chn: "嗓音" }, { eng: "choice", chn: "选择" }, { eng: "pain", chn: "疼痛" }, { eng: "main", chn: "主要的" }, { eng: "remain", chn: "保持" }, { eng: "accident", chn: "事故" }, { eng: "president", chn: "总统" }] }
     };
 
-    let currentLectureId = 3;          // 默认第3讲
-    let currentWords = [];              // 存储当前讲次的配对 [{eng, chn}]
-    let items = [];                     // 卡片数组 { id, groupId, type, text, eliminated }
+    let currentLectureId = 3;
+    let currentWords = [];
+    let items = [];
     let selectedId = null;
     let score = 0;
-    let timeLeft = 120;                 // 2分钟 = 120秒
+    let timeLeft = 120;
     let timer = null;
     let gameActive = true;
 
     // DOM
-    const titleEl = document.getElementById('gameTitle');
     const lectureTag = document.getElementById('lectureTag');
     const navSlider = document.getElementById('navSlider');
     const scoreSpan = document.getElementById('scoreValue');
@@ -359,12 +385,6 @@
     const statusMsg = document.getElementById('statusMsg');
     const container = document.getElementById('wordsContainer');
     
-    // Logo 元素（完全保留）
-    const logoImg = document.getElementById('logoImg');
-    const logoPlaceholder = document.getElementById('logoPlaceholder');
-   
-    
-    // 点击 Logo 区域可自定义行为（完全保留）
     const logoArea = document.getElementById('logoArea');
     if (logoArea) {
         logoArea.addEventListener('click', () => {
@@ -378,7 +398,6 @@
         });
     }
     
-    // 音效 (轻量)
     let audioCtx = null;
     function beep(freq) {
         if (!audioCtx) return;
@@ -397,7 +416,6 @@
     function playCorrect() { beep(880); }
     function playWrong() { beep(520); }
 
-    // 辅助：洗牌
     function shuffle(arr) {
         for (let i = arr.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -406,7 +424,6 @@
         return arr;
     }
 
-    // 根据当前单词构建卡片（英文+中文混合乱序）
     function buildItems() {
         const newItems = [];
         let idx = 0;
@@ -417,7 +434,6 @@
         return shuffle(newItems);
     }
 
-    // 渲染词云
     function renderCloud() {
         container.innerHTML = '';
         items.forEach(item => {
@@ -435,7 +451,6 @@
         });
     }
 
-    // 核心配对逻辑
     function onCardClick(clickId) {
         if (!gameActive) return;
         const clicked = items.find(i => i.id === clickId);
@@ -461,7 +476,6 @@
             return;
         }
 
-        // 检查配对：类型不同且属于同一个单词组
         const isMatch = (selected.type !== clicked.type && selected.groupId === clicked.groupId);
         if (isMatch) {
             selected.eliminated = true;
@@ -472,14 +486,12 @@
             statusMsg.innerText = `✅ 配对成功 +10分 (${selected.text} ↔ ${clicked.text})`;
             selectedId = null;
             renderCloud();
-            const allGone = items.every(i => i.eliminated === true);
-            if (allGone) gameVictory();
+            if (items.every(i => i.eliminated === true)) gameVictory();
         } else {
             score = Math.max(0, score - 2);
             updateScoreUI();
             playWrong();
             statusMsg.innerText = `❌ 配对错误 -2分 (${selected.text} ≠ ${clicked.text})`;
-            // 抖动特效
             const allDivs = document.querySelectorAll('.word-card');
             allDivs.forEach(div => {
                 if (div.textContent === selected.text || div.textContent === clicked.text) {
@@ -545,7 +557,7 @@
         if (ov) ov.remove();
         selectedId = null;
         score = 0;
-        timeLeft = 120;                 // 重置为2分钟
+        timeLeft = 120;
         gameActive = true;
         updateScoreUI();
         updateTimerUI();
@@ -555,21 +567,18 @@
         statusMsg.innerText = '🃏 已重置，开始配对！';
     }
 
-    // 切换讲次
     function switchLecture(lectureId) {
         if (!LECTURES[lectureId]) return;
         if (timer) clearInterval(timer);
         currentLectureId = lectureId;
         const data = LECTURES[currentLectureId];
         currentWords = data.words.map(pair => ({ eng: pair.eng, chn: pair.chn }));
-        // 更新第二行标题
         const subTitle = document.querySelector('.game-title-sub');
         if (subTitle) subTitle.innerHTML = `${data.title}`;
         lectureTag.innerHTML = `${data.title}`;
-        // 重置所有状态
         selectedId = null;
         score = 0;
-        timeLeft = 120;                 // 切换讲次后也是2分钟
+        timeLeft = 120;
         gameActive = true;
         updateScoreUI();
         updateTimerUI();
@@ -581,7 +590,6 @@
         if (ov) ov.remove();
     }
 
-    // 构建导航按钮
     function buildLectureNav() {
         navSlider.innerHTML = '';
         Object.keys(LECTURES).sort((a,b)=>a-b).forEach(lid => {
@@ -593,7 +601,6 @@
         });
     }
 
-    // 初始化页面 (读取URL参数可选)
     function init() {
         buildLectureNav();
         const urlParams = new URLSearchParams(window.location.search);
@@ -602,7 +609,6 @@
         else currentLectureId = 3;
         const data = LECTURES[currentLectureId];
         currentWords = data.words.map(pair => ({ eng: pair.eng, chn: pair.chn }));
-        // 更新第二行标题
         const subTitle = document.querySelector('.game-title-sub');
         if (subTitle) subTitle.innerHTML = `${data.title}`;
         lectureTag.innerHTML = `${data.title}`;
@@ -611,7 +617,6 @@
         updateScoreUI();
         updateTimerUI();
         startCountdown();
-        // 音频准备
         document.body.addEventListener('click', () => {
             if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
         }, { once: true });
