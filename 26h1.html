@@ -14,13 +14,14 @@
         }
         body {
             background: linear-gradient(145deg, #fef5e6 0%, #fff0df 100%);
-            font-family: 'PingFang SC', 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
+            /* 修改点2：字体调整 - 中文字体微软雅黑，英文字体Arial */
+            font-family: '微软雅黑', 'Microsoft YaHei', 'Arial', 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
             padding: 16px 12px 30px;
             min-height: 100vh;
             position: relative;
         }
         
-        /* ========= 固定左上角 Logo 区域 ========= */
+        /* ========= 固定左上角 Logo 区域（完全保留，未修改） ========= */
         .fixed-logo {
             position: fixed;
             top: 16px;
@@ -71,14 +72,15 @@
             z-index: 1;
         }
         
-        /* 头部区域（让标题依然舒适） */
+        /* 头部区域 - 修改点1：标题改为两行 */
         .game-header {
             text-align: center;
             margin-bottom: 12px;
             margin-left: 0;
             margin-right: 0;
         }
-        .game-title {
+        /* 第一行标题 */
+        .game-title-main {
             font-size: 1.8rem;
             font-weight: 800;
             background: linear-gradient(135deg, #f09819, #ff6b4a);
@@ -86,18 +88,18 @@
             -webkit-background-clip: text;
             color: transparent;
             letter-spacing: -0.3px;
+            font-family: '微软雅黑', 'Microsoft YaHei', 'Arial', sans-serif;
+            margin-bottom: 4px;
         }
-        .lecture-tag {
-            background: #ffffffcc;
-            backdrop-filter: blur(4px);
-            display: inline-block;
-            padding: 6px 18px;
-            border-radius: 40px;
-            font-size: 0.75rem;
+        /* 第二行讲次标题 */
+        .game-title-sub {
+            font-size: 1.2rem;
             font-weight: 600;
             color: #c97e2c;
-            margin-top: 6px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+            font-family: '微软雅黑', 'Microsoft YaHei', 'Arial', sans-serif;
+        }
+        .lecture-tag {
+            display: none;
         }
         /* 计分栏 */
         .stats {
@@ -120,12 +122,14 @@
             font-weight: 700;
             font-size: 1.5rem;
             color: #e67e22;
+            font-family: 'Arial', '微软雅黑', sans-serif;
         }
         .score span, .timer span {
             font-size: 0.7rem;
             display: block;
             font-weight: 500;
             color: #b45a2b;
+            font-family: '微软雅黑', 'Microsoft YaHei', 'Arial', sans-serif;
         }
         .timer {
             color: #2c6e9e;
@@ -151,6 +155,7 @@
             cursor: pointer;
             transition: 0.1s;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            font-family: '微软雅黑', 'Microsoft YaHei', 'Arial', sans-serif;
         }
         .lecture-btn:active { transform: scale(0.96); background: #ffe2bf; }
         /* 操作栏 */
@@ -171,6 +176,7 @@
             cursor: pointer;
             box-shadow: 0 2px 6px rgba(0,0,0,0.05);
             font-size: 0.9rem;
+            font-family: '微软雅黑', 'Microsoft YaHei', 'Arial', sans-serif;
         }
         .reset:active { transform: scale(0.97); }
         .message {
@@ -181,6 +187,7 @@
             color: #bc702e;
             flex: 1;
             text-align: center;
+            font-family: '微软雅黑', 'Microsoft YaHei', 'Arial', sans-serif;
         }
         /* 词云区域 — 泡泡单词 */
         .word-cloud {
@@ -206,17 +213,21 @@
             min-width: 80px;
             touch-action: manipulation;
             border: 1px solid #fff2e2;
+            font-family: '微软雅黑', 'Microsoft YaHei', 'Arial', sans-serif;
         }
         /* 英文单词： 蓝色清新 */
         .word-card.eng {
             background: linear-gradient(135deg, #b7e0ff, #8bcbff);
             color: #1f4b6e;
             box-shadow: 0 5px 10px rgba(55, 94, 148, 0.12);
+            font-family: 'Arial', '微软雅黑', sans-serif;
+            font-weight: 700;
         }
         /* 中文单词：暖橙色 */
         .word-card.chn {
             background: linear-gradient(135deg, #ffdeb3, #ffcd94);
             color: #8a4f1c;
+            font-family: '微软雅黑', 'Microsoft YaHei', 'Arial', sans-serif;
         }
         /* 选中高亮 */
         .word-card.selected {
@@ -265,7 +276,7 @@
             max-width: 280px;
             border: 2px solid #ffcd94;
         }
-        .end-card h2 { color: #e67e22; margin-bottom: 12px; }
+        .end-card h2 { color: #e67e22; margin-bottom: 12px; font-family: '微软雅黑', sans-serif; }
         .end-card button {
             background: #f7b05e;
             border: none;
@@ -275,10 +286,12 @@
             color: white;
             margin-top: 12px;
             cursor: pointer;
+            font-family: '微软雅黑', 'Microsoft YaHei', 'Arial', sans-serif;
         }
         @media (max-width: 500px) {
             .word-card { padding: 8px 16px; font-size: 0.9rem; min-width: 70px; }
-            .game-title { font-size: 1.5rem; }
+            .game-title-main { font-size: 1.5rem; }
+            .game-title-sub { font-size: 1rem; }
             .fixed-logo {
                 width: 40px;
                 height: 40px;
@@ -290,14 +303,17 @@
 </head>
 <body>
 
-<!-- ========= 左上角固定 Logo 区域 ========= -->
+<!-- ========= 左上角固定 Logo 区域（完全保留，未修改） ========= -->
 <div class="fixed-logo" id="logoArea" title="返回首页 / 品牌标识">
     <img id="logoImg" src="./logo.png">
 </div>
 
 <div class="game-wrap">
     <div class="game-header">
-        <div class="game-title" id="gameTitle">📖 英语单词消消乐</div>
+        <!-- 修改点1：第一行：有道英语单词消消乐 -->
+        <div class="game-title-main">📖 有道英语单词消消乐</div>
+        <!-- 修改点1：第二行：第3讲 · 心灵奇旅 -->
+        <div class="game-title-sub">第3讲 · 心灵奇旅</div>
         <div class="lecture-tag" id="lectureTag">第3讲 · 心灵奇旅</div>
     </div>
 
@@ -321,7 +337,6 @@
     // ----------------------------- 单词库（多讲次，可无限扩展）--------------------------------
     const LECTURES = {
         1: { title: "第1讲 · 玩具总动员", words: [{ eng: "seat", chn: "座位" }, { eng: "beat", chn: "击打" }, { eng: "cheat", chn: "欺骗" }, { eng: "repeat", chn: "重复" }, { eng: "discuss", chn: "v. 讨论" }, { eng: "discussion", chn: "n. 讨论" }, { eng: "cycle", chn: "骑自行车" }, { eng: "recycle", chn: "回收利用" }, { eng: "raise", chn: "举起；抚养；筹集；提出" }, { eng: "praise", chn: "表扬" }, { eng: "serious", chn: "严肃的" }, { eng: "curious", chn: "好奇的" }, { eng: "polite", chn: "有礼貌的" }, { eng: "impolite", chn: "无礼的" }] },
-        
         3: { title: "第3讲 · 心灵奇旅", words: [{ eng: "clock", chn: "钟" }, { eng: "block", chn: "街区" }, { eng: "knock", chn: "敲" }, { eng: "shock", chn: "震惊" }, { eng: "joke", chn: "笑话" }, { eng: "smoke", chn: "吸烟" }, { eng: "voice", chn: "嗓音" }, { eng: "choice", chn: "选择" }, { eng: "pain", chn: "疼痛" }, { eng: "main", chn: "主要的" }, { eng: "remain", chn: "保持" }, { eng: "accident", chn: "事故" }, { eng: "president", chn: "总统" }] }
     };
 
@@ -344,17 +359,15 @@
     const statusMsg = document.getElementById('statusMsg');
     const container = document.getElementById('wordsContainer');
     
-    // Logo 元素
+    // Logo 元素（完全保留）
     const logoImg = document.getElementById('logoImg');
     const logoPlaceholder = document.getElementById('logoPlaceholder');
    
     
-    // 点击 Logo 区域可自定义行为（比如回到顶部，或者刷新游戏，或自定义链接）
-    // 这里设定点击logo重置游戏（方便用户快速重置，也可以跳转主页，根据需求）
+    // 点击 Logo 区域可自定义行为（完全保留）
     const logoArea = document.getElementById('logoArea');
     if (logoArea) {
         logoArea.addEventListener('click', () => {
-            // 轻交互：重置当前游戏（符合教学需求，快速重新开始）
             if (resetGame && typeof resetGame === 'function') {
                 resetGame();
                 statusMsg.innerText = '✨ 点击Logo，游戏已重置 ✨';
@@ -549,8 +562,10 @@
         currentLectureId = lectureId;
         const data = LECTURES[currentLectureId];
         currentWords = data.words.map(pair => ({ eng: pair.eng, chn: pair.chn }));
-        titleEl.innerHTML = `📖 英语单词消消乐 · ${data.title}`;
-        lectureTag.innerHTML = `🎯 ${data.title}`;
+        // 更新第二行标题
+        const subTitle = document.querySelector('.game-title-sub');
+        if (subTitle) subTitle.innerHTML = `${data.title}`;
+        lectureTag.innerHTML = `${data.title}`;
         // 重置所有状态
         selectedId = null;
         score = 0;
@@ -580,7 +595,6 @@
 
     // 初始化页面 (读取URL参数可选)
     function init() {
-        //initLogo();               // 初始化logo显示
         buildLectureNav();
         const urlParams = new URLSearchParams(window.location.search);
         const lidParam = parseInt(urlParams.get('lecture'));
@@ -588,8 +602,10 @@
         else currentLectureId = 3;
         const data = LECTURES[currentLectureId];
         currentWords = data.words.map(pair => ({ eng: pair.eng, chn: pair.chn }));
-        titleEl.innerHTML = `📖 英语单词消消乐 · ${data.title}`;
-        lectureTag.innerHTML = `🎯 ${data.title}`;
+        // 更新第二行标题
+        const subTitle = document.querySelector('.game-title-sub');
+        if (subTitle) subTitle.innerHTML = `${data.title}`;
+        lectureTag.innerHTML = `${data.title}`;
         items = buildItems();
         renderCloud();
         updateScoreUI();
