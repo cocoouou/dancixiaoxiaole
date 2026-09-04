@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>单词消消乐 - 多玩法</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            background: linear-gradient(145deg, #fef5e6 0%, #fff0df 100%);
+            font-family: '微软雅黑', 'Microsoft YaHei', 'Arial', 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
+            padding: 20px;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        .fixed-logo {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: rgba(255, 250, 240, 0.9);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s;
+            border: 1px solid rgba(255, 245, 215, 0.8);
+        }
+        .fixed-logo:hover {
+            transform: scale(1.02);
+            background: rgba(255, 250, 240, 1);
+        }
+        .fixed-logo:active {
+            transform: scale(0.96);
+        }
+        .fixed-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+        
+        .game-wrap {
+            max-width: 1100px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .game-header {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        
+        .game-title-main {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f09819, #ff6b4a);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+            font-family: '微软雅黑', 'Microsoft YaHei', 'Arial', sans-serif;
+            margin-bottom: 6px;
+            display: inline-block;
+        }
+        
+        .star {
+            display: inline-block;
+            font-size: 1.6rem;
+            background: none;
+            color: #f5a623;
+            text-shadow: 0 0 4px #ffd700;
+            animation: twinkle 1.2s ease-in-out infinite;
+        }
+        .star-left { margin-right: 10px; }
+        .star-right { margin-left: 10px; }
+        @keyframes twinkle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.1); }
+        }
+        
+        .game-title-sub {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #c97e2c;
+            font-family: '微软雅黑', 'Microsoft YaHei', 'Arial', sans-serif;
+            margin-top: 4px;
+        }
+        .lecture-tag { display: none; }
+        
+        .game-mode-badge {
+            display: inline-block;
+            font-size: 0.75rem;
+            background: #ffd89a;
+            padding: 2px 14px;
+            border-radius: 20px;
+            color: #7a3f0e;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin: 16px auto;
+            max-width: 350px;
+        }
+        .score, .progress {
+            background: linear-gradient(135deg, #fff8f0, #fff3e6);
+            border-radius: 50px;
+            padding: 6px 20px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: #e67e22;
+            font-family: 'Arial', '微软雅黑', sans-serif;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255, 235, 205, 0.6);
+            backdrop-filter: blur(4px);
+        }
+        .score span, .progress span {
+            font-size: 0.65rem;
+            display: block;
+            font-weight: 500;
+            color: #b45a2b;
+            font-family: '微软雅黑', 'Microsoft YaHei', 'Arial', sans-serif;
+            margin-bottom: 2px;
+        }
+        .progress { color: #2c6e9e; }
+        
+        .nav-slider {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 10px;
+            justify-items: center;
+            align-items: center;
+            padding: 8px 0 12px;
+            margin-bottom: 8px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .lecture-btn {
+            background: #ffefdb;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #bc702e;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: 0.15s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            font-family: '微软雅黑', 'Microsoft YaHei', 'Arial', sans-serif;
+            width: 100%;
+            text-align: center;
+        }
+        .lecture-btn:hover {
+            background: #ffe2bf;
+            transform: translateY(-1px);
+        }
+        .lecture-btn:active { transform: scale(0.96); background: #ffe2bf; }
+        .lecture-btn.active {
+            background: #ffd89a;
+            box-shadow: 0 0 0 2px #f5a623;
+        }
+        
+        .action-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin: 10px 0 20px;
+            flex-wrap: wrap;
+        }
+        .reset {
+            background: #ffd89a;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            color: #a55217;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            font-size: 0.95rem;
+            font-family: '微软雅黑', 'Microsoft YaHei', 'Arial', sans-serif;
+            transition: all 0.2s;
+        }
+        .reset:hover {
+            background: #ffcd7a;
+            transform: translateY(-1px);
+        }
+        .reset:active { transform: scale(0.97); }
+        .message {
+            background: #f7e5cd;
+            padding: 8px 20px;
+            border-radius: 32px;
+            font-size: 0.85rem;
+            color: #bc702e;
+            flex: 0 1 auto;
+            text-align: center;
+            font-family: '微软雅黑', 'Microsoft YaHei', 'Arial', sans-serif;
+        }
+        
+        .game-area {
+            position: relative;
+            min-height: 420px;
+            background: rgba(255, 250, 245, 0.5);
+            border-radius: 30px;
+            overflow: hidden;
+            margin-top: 10px;
+            padding: 20px;
+            border: 1px solid rgba(255, 235, 205, 0.3);
+        }
+        
+        .word-cloud {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 18px;
+            justify-items: center;
+            align-items: center;
+            padding: 10px 0 20px;
+            min-height: 350px;
+        }
+        .word-card {
+            background: linear-gradient(135deg, #fff5e8, #ffe6d0);
+            border-radius: 50px;
+            padding: 12px 16px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 6px 14px -6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 140px;
+            touch-action: manipulation;
+            border: 1px solid rgba(255, 245, 225, 0.8);
+            font-family: '微软雅黑', 'Microsoft YaHei', 'Arial', sans-serif;
+        }
+        .word-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 20px -10px rgba(0, 0, 0, 0.15);
+        }
+        .word-card.eng {
+            background: linear-gradient(135deg, #c5e6ff, #a8d4ff);
+            color: #1f5a8e;
+            font-family: 'Arial', '微软雅黑', sans-serif;
+            font-weight: 700;
+        }
+        .word-card.chn {
+            background: linear-gradient(135deg, #ffe6c4, #ffd8ae);
+            color: #8a4f1c;
+            font-family: '微软雅黑', 'Microsoft YaHei', 'Arial', sans-serif;
+        }
+        .word-card.selected {
+            transform: scale(0.96);
+            background: #ffe0a3;
+            box-shadow: 0 0 0 3px #f9b953;
+            color: #a55217;
+        }
+        .word-card.eliminated {
+            visibility: hidden;
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.7);
+            transition: visibility 0.15s, opacity 0.15s;
+        }
+        .word-card.error-shake {
+            animation: shake 0.2s ease-in-out 0s 2;
+            background: #ffb5a7 !important;
+        }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+            100% { transform: translateX(0); }
+        }
+        
+        .quiz-container { max-width: 500px; margin: 0 auto; padding: 10px 0; }
+        .quiz-word { font-size: 1.8rem; font-weight: 700; color: #1f5a8e; text-align: center; padding: 15px 0; font-family: 'Arial', '微软雅黑', sans-serif; }
+        .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 400px; margin: 0 auto; }
+        .quiz-opt { padding: 12px 16px; border-radius: 30px; border: 2px solid #ddd; background: #fff; cursor: pointer; font-size: 0.95rem; transition: all 0.15s; font-family: '微软雅黑', 'Microsoft YaHei', 'Arial', sans-serif; text-align: center; }
+        .quiz-opt:hover { border-color: #f5a623; }
+        .quiz-opt.correct { border-color: #6fcf97; background: #e8f5e9; }
+        .quiz-opt.wrong { border-color: #ff6b6b; background: #ffebee; }
+        .quiz-opt:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .end-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(255, 245, 230, 0.96);
+            backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        .end-card {
+            background: #fff7ef;
+            border-radius: 56px;
+            padding: 35px 45px;
+            text-align: center;
+            width: auto;
+            min-width: 280px;
+            border: 2px solid #ffcd94;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.2);
+        }
+        .end-card h2 { color: #e67e22; margin-bottom: 15px; font-family: '微软雅黑', sans-serif; font-size: 1.8rem; }
+        .end-card p { font-size: 1.3rem; margin-bottom: 20px; }
+        .end-card button {
+            background: #f7b05e;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 50px;
+            font-weight: bold;
+            color: white;
+            margin-top: 12px;
+            cursor: pointer;
+            font-family: '微软雅黑', 'Microsoft YaHei', 'Arial', sans-serif;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+        }
+        .end-card button:hover { background: #e8953a; transform: scale(1.02); }
+        
+        @media (min-width: 768px) {
+            .word-card { transition: transform 0.2s, box-shadow 0.2s; }
+        }
+        
+        @media (max-width: 640px) {
+            body { padding: 12px; }
+            .game-wrap { max-width: 100%; }
+            .game-title-main { font-size: 1.4rem; }
+            .star { font-size: 1.1rem; }
+            .star-left { margin-right: 5px; }
+            .star-right { margin-left: 5px; }
+            .game-title-sub { font-size: 0.85rem; }
+            .stats { max-width: 250px; gap: 15px; }
+            .score, .progress { font-size: 1rem; padding: 4px 14px; }
+            .score span, .progress span { font-size: 0.6rem; }
+            .word-cloud { grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap: 12px; }
+            .word-card { padding: 8px 10px; font-size: 0.8rem; max-width: 100px; border-radius: 40px; }
+            .nav-slider { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+            .lecture-btn { padding: 5px 8px; font-size: 0.7rem; }
+            .action-bar { gap: 12px; }
+            .reset { padding: 7px 18px; font-size: 0.8rem; }
+            .message { padding: 5px 12px; font-size: 0.65rem; }
+            .fixed-logo { width: 36px; height: 36px; top: 10px; left: 10px; }
+            .game-area { min-height: 350px; padding: 15px; }
+            .quiz-word { font-size: 1.4rem; }
+            .quiz-options { grid-template-columns: 1fr 1fr; gap: 8px; }
+            .quiz-opt { padding: 8px 12px; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="fixed-logo" id="logoArea" title="返回首页 / 品牌标识">
+    <img id="logoImg" src="./logo.png" alt="Logo">
+</div>
+
+<div class="game-wrap">
+    <div class="game-header">
+        <div class="game-title-main">
+            <span class="star star-left">✨</span>
+            有道初三英语单词小游戏
+            <span class="star star-right">✨</span>
+        </div>
+        <div class="game-title-sub" id="lectureTitle">第1讲 · 单词消消乐</div>
+        <div class="game-mode-badge" id="modeBadge">🎯 消消乐</div>
+        <div class="lecture-tag" id="lectureTag">第1讲 · 单词消消乐</div>
+    </div>
+
+    <div class="nav-slider" id="navSlider"></div>
+
+    <div class="stats">
+        <div class="score"><span>🏆 得分</span> <span id="scoreValue">0</span></div>
+        <div class="progress"><span>📦 进度</span> <span id="progressValue">0/10</span></div>
+    </div>
+
+    <div class="action-bar">
+        <button class="reset" id="resetBtn">🔄 重新开始</button>
+        <div class="message" id="statusMsg">✨ 点击英文，再点中文配对 ✨</div>
+    </div>
+
+    <div class="game-area" id="gameArea">
+        <div class="word-cloud" id="wordsContainer"></div>
+        <div class="quiz-container" id="quizContainer" style="display:none;"></div>
+    </div>
+</div>
+
+<script>
+    // ==================== 单词库 ====================
+    // 10个讲次，轮流使用两种玩法：match(消消乐) / quiz(选择题)
+        // ==================== 单词库 ====================
+    // 16个讲次，轮流使用两种玩法：match(消消乐) / quiz(选择题)
+    // ==================== 单词库 ====================
+    // 16个讲次，轮流使用两种玩法：match(消消乐) / quiz(选择题)
+        // ==================== 单词库 ====================
+    // 16个讲次，轮流使用两种玩法：match(消消乐) / quiz(选择题)
+    const LECTURES = {
+        1: {
+            title: "第1讲 · 单词消消乐",
+            type: "match",
+            words: [
+                { eng: "depend on", chn: "依赖" },
+                { eng: "influence", chn: "影响" },
+                { eng: "relax", chn: "放松" },
+                { eng: "important", chn: "重要的" },
+                { eng: "produce", chn: "生产" },
+                { eng: "exercise", chn: "锻炼" },
+                { eng: "encourage", chn: "鼓励" },
+                { eng: "advise", chn: "建议" },
+                { eng: "expect", chn: "期待" },
+                { eng: "invite", chn: "邀请" }
+            ]
+        },
+        2: {
+            title: "第2讲 · 单词选择题",
+            type: "quiz",
+            words: [
+                { eng: "politely", chn: "礼貌地" },
+                { eng: "successfully", chn: "成功地" },
+                { eng: "pick up", chn: "捡起" },
+                { eng: "protect", chn: "保护" },
+                { eng: "peaceful", chn: "和平的" },
+                { eng: "visit", chn: "参观" },
+                { eng: "useful", chn: "有用的" },
+                { eng: "plan", chn: "计划" },
+                { eng: "tradition", chn: "传统" },
+                { eng: "develop", chn: "发展" }
+            ]
+        },
+        3: {
+            title: "第3讲 · 单词消消乐",
+            type: "match",
+            words: [
+                { eng: "difficult", chn: "困难的" },
+                { eng: "discover", chn: "发现" },
+                { eng: "cost", chn: "花费" },
+                { eng: "customer", chn: "顾客" },
+                { eng: "invent", chn: "发明" },
+                { eng: "success", chn: "成功" },
+                { eng: "mistake", chn: "错误" },
+                { eng: "balance", chn: "平衡" },
+                { eng: "cover", chn: "覆盖" },
+                { eng: "country", chn: "国家" }
+            ]
+        },
+        4: {
+            title: "第4讲 · 单词选择题",
+            type: "quiz",
+            words: [
+                { eng: "scientist", chn: "科学家" },
+                { eng: "researcher", chn: "研究员" },
+                { eng: "risk", chn: "风险" },
+                { eng: "technology", chn: "技术" },
+                { eng: "explore", chn: "探索" },
+                { eng: "knowledge", chn: "知识" },
+                { eng: "popular", chn: "受欢迎的" },
+                { eng: "tourist", chn: "游客" },
+                { eng: "progress", chn: "进步" },
+                { eng: "interest", chn: "兴趣" }
+            ]
+        },
+        5: {
+            title: "第5讲 · 单词消消乐",
+            type: "match",
+            words: [
+                { eng: "special", chn: "特别的" },
+                { eng: "avoid", chn: "避免" },
+                { eng: "suffer", chn: "遭受" },
+                { eng: "protect", chn: "保护" },
+                { eng: "attract", chn: "吸引" },
+                { eng: "survive", chn: "幸存" },
+                { eng: "pay", chn: "支付" },
+                { eng: "enough", chn: "足够的" },
+                { eng: "give up", chn: "放弃" },
+                { eng: "competition", chn: "竞争" }
+            ]
+        },
+        6: {
+            title: "第6讲 · 单词选择题",
+            type: "quiz",
+            words: [
+                { eng: "famous", chn: "著名的" },
+                { eng: "celebrate", chn: "庆祝" },
+                { eng: "together", chn: "一起" },
+                { eng: "hold", chn: "举行" },
+                { eng: "special", chn: "特别的" },
+                { eng: "bridge", chn: "桥" },
+                { eng: "offer", chn: "提供" },
+                { eng: "leave", chn: "离开" },
+                { eng: "luck", chn: "运气" },
+                { eng: "quickly", chn: "快速地" }
+            ]
+        },
+        7: {
+            title: "第7讲 · 单词消消乐",
+            type: "match",
+            words: [
+                { eng: "proud", chn: "骄傲的" },
+                { eng: "excited", chn: "兴奋的" },
+                { eng: "appear", chn: "出现" },
+                { eng: "allow", chn: "允许" },
+                { eng: "encourage", chn: "鼓励" },
+                { eng: "control", chn: "控制" },
+                { eng: "relax", chn: "放松" },
+                { eng: "animal", chn: "动物" },
+                { eng: "nature", chn: "自然" },
+                { eng: "warn", chn: "警告" }
+            ]
+        },
+        8: {
+            title: "第8讲 · 单词选择题",
+            type: "quiz",
+            words: [
+                { eng: "traditional", chn: "传统的" },
+                { eng: "experience", chn: "经历；经验" },
+                { eng: "collect", chn: "收集" },
+                { eng: "information", chn: "信息" },
+                { eng: "change", chn: "改变" },
+                { eng: "visitor", chn: "游客" },
+                { eng: "exercise", chn: "锻炼" },
+                { eng: "astronaut", chn: "宇航员" },
+                { eng: "teenager", chn: "青少年" },
+                { eng: "allow", chn: "允许" }
+            ]
+        },
+        9: {
+            title: "第9讲 · 单词消消乐",
+            type: "match",
+            words: [
+                { eng: "people", chn: "人们" },
+                { eng: "valuable", chn: "有价值的" },
+                { eng: "bring", chn: "带来" },
+                { eng: "compare", chn: "比较" },
+                { eng: "difference", chn: "差异" },
+                { eng: "instead of", chn: "代替" },
+                { eng: "honest", chn: "诚实的" },
+                { eng: "spend", chn: "花费" },
+                { eng: "grow up", chn: "成长" },
+                { eng: "smooth", chn: "顺利的" }
+            ]
+        },
+        10: {
+            title: "第10讲 · 单词选择题",
+            type: "quiz",
+            words: [
+                { eng: "common", chn: "普通的" },
+                { eng: "feed", chn: "喂养" },
+                { eng: "travel", chn: "旅行" },
+                { eng: "without", chn: "没有" },
+                { eng: "such as", chn: "例如" },
+                { eng: "festival", chn: "节日" },
+                { eng: "progress", chn: "进步" },
+                { eng: "volunteer", chn: "志愿者" },
+                { eng: "daily", chn: "日常的" },
+                { eng: "count", chn: "数数" }
+            ]
+        },
+        11: {
+            title: "第11讲 · 单词消消乐",
+            type: "match",
+            words: [
+                { eng: "practice", chn: "练习" },
+                { eng: "famous", chn: "著名的" },
+                { eng: "popular", chn: "受欢迎的" },
+                { eng: "successful", chn: "成功的" },
+                { eng: "suddenly", chn: "突然" },
+                { eng: "carefully", chn: "小心地" },
+                { eng: "friendship", chn: "友谊" },
+                { eng: "choose", chn: "选择" },
+                { eng: "consider", chn: "考虑" },
+                { eng: "silence", chn: "沉默" }
+            ]
+        },
+        12: {
+            title: "第12讲 · 单词选择题",
+            type: "quiz",
+            words: [
+                { eng: "attractive", chn: "有吸引力的" },
+                { eng: "turn down", chn: "调低" },
+                { eng: "cut off", chn: "切断" },
+                { eng: "worry about", chn: "担心" },
+                { eng: "practice", chn: "练习" },
+                { eng: "village", chn: "村庄" },
+                { eng: "meaningful", chn: "有意义的" },
+                { eng: "understand", chn: "理解" },
+                { eng: "traditional", chn: "传统的" },
+                { eng: "culture", chn: "文化" }
+            ]
+        },
+        13: {
+            title: "第13讲 · 单词消消乐",
+            type: "match",
+            words: [
+                { eng: "happen", chn: "发生" },
+                { eng: "forest", chn: "森林" },
+                { eng: "surprised", chn: "惊讶的" },
+                { eng: "different", chn: "不同的" },
+                { eng: "common", chn: "普通的" },
+                { eng: "business", chn: "商业" },
+                { eng: "attention", chn: "注意力" },
+                { eng: "enjoy", chn: "享受" },
+                { eng: "holiday", chn: "假期" },
+                { eng: "wonder", chn: "想知道；奇迹" }
+            ]
+        },
+        14: {
+            title: "第14讲 · 单词选择题",
+            type: "quiz",
+            words: [
+                { eng: "connect", chn: "连接" },
+                { eng: "talent", chn: "才能" },
+                { eng: "task", chn: "任务" },
+                { eng: "failure", chn: "失败" },
+                { eng: "instruction", chn: "指示" },
+                { eng: "praise", chn: "表扬" },
+                { eng: "cheer", chn: "欢呼；加油" },
+                { eng: "foreign", chn: "外国的" },
+                { eng: "usual", chn: "通常的" },
+                { eng: "friendly", chn: "友好的" }
+            ]
+        },
+        15: {
+            title: "第15讲 · 单词消消乐",
+            type: "match",
+            words: [
+                { eng: "pleased", chn: "高兴的" },
+                { eng: "worried", chn: "担心的" },
+                { eng: "action", chn: "行动" },
+                { eng: "lucky", chn: "幸运的" },
+                { eng: "success", chn: "成功" },
+                { eng: "factory", chn: "工厂" },
+                { eng: "hometown", chn: "家乡" },
+                { eng: "trouble", chn: "麻烦" },
+                { eng: "science", chn: "科学" },
+                { eng: "knowledge", chn: "知识" }
+            ]
+        },
+        16: {
+            title: "第16讲 · 单词选择题",
+            type: "quiz",
+            words: [
+                { eng: "national", chn: "国家的" },
+                { eng: "begin", chn: "开始" },
+                { eng: "visit", chn: "参观" },
+                { eng: "vegetable", chn: "蔬菜" },
+                { eng: "language", chn: "语言" },
+                { eng: "tradition", chn: "传统" },
+                { eng: "bring", chn: "带来" },
+                { eng: "learn", chn: "学习" },
+                { eng: "celebrate", chn: "庆祝" },
+                { eng: "use", chn: "使用" }
+            ]
+        }
+    };
+
+    const MODE_NAMES = {
+        match: '消消乐',
+        quiz: '选择题'
+    };
+    const MODE_ICONS = {
+        match: '🎯',
+        quiz: '📝'
+    };
+
+    let currentLectureId = 1;
+    let currentWords = [];
+    let currentGameType = 'match';
+    let items = [];
+    let selectedId = null;
+    let score = 0;
+    let completedPairs = 0;
+    let gameActive = true;
+    let quizAnswered = false;
+
+    // DOM
+    const lectureTitle = document.getElementById('lectureTitle');
+    const modeBadge = document.getElementById('modeBadge');
+    const lectureTag = document.getElementById('lectureTag');
+    const navSlider = document.getElementById('navSlider');
+    const scoreSpan = document.getElementById('scoreValue');
+    const progressSpan = document.getElementById('progressValue');
+    const resetBtn = document.getElementById('resetBtn');
+    const statusMsg = document.getElementById('statusMsg');
+    const gameArea = document.getElementById('gameArea');
+    const matchContainer = document.getElementById('wordsContainer');
+    const quizContainer = document.getElementById('quizContainer');
+
+    const logoArea = document.getElementById('logoArea');
+    if (logoArea) {
+        logoArea.addEventListener('click', () => {
+            resetGame();
+            statusMsg.innerText = '✨ 游戏已重置 ✨';
+        });
+    }
+
+    let audioCtx = null;
+    function beep(freq) {
+        if (!audioCtx) return;
+        try {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.value = freq;
+            gain.gain.value = 0.12;
+            gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.3);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.25);
+        } catch(e) {}
+    }
+    function playCorrect() { beep(880); }
+    function playWrong() { beep(520); }
+
+    function shuffle(arr) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+    }
+
+    function sample(arr, n) {
+        const s = shuffle(arr);
+        return s.slice(0, n);
+    }
+
+    function updateScoreUI() { scoreSpan.innerText = score; }
+    function updateProgressUI() {
+        const total = currentWords.length;
+        progressSpan.innerText = `${completedPairs}/${total}`;
+    }
+
+    function showGameOver(isWin) {
+        if (document.querySelector('.end-overlay')) return;
+        const overlay = document.createElement('div');
+        overlay.className = 'end-overlay';
+        overlay.innerHTML = `<div class="end-card">
+            <h2>${isWin ? '🏆 闯关成功' : '⏰ 游戏结束'}</h2>
+            <p>得分: ${score}</p>
+            <button id="restartEndBtn">再来一次</button>
+        </div>`;
+        document.body.appendChild(overlay);
+        document.getElementById('restartEndBtn').onclick = () => {
+            overlay.remove();
+            resetGame();
+        };
+    }
+
+    function gameVictory() {
+        gameActive = false;
+        statusMsg.innerText = '🎉 胜利！全部完成 🎉';
+        showGameOver(true);
+    }
+
+    // ============================================================
+    // 1. 消消乐 (match)
+    // ============================================================
+    function buildMatchItems() {
+        const newItems = [];
+        let idx = 0;
+        currentWords.forEach((pair, gid) => {
+            newItems.push({ id: idx++, groupId: gid, type: 'eng', text: pair.eng, eliminated: false });
+            newItems.push({ id: idx++, groupId: gid, type: 'chn', text: pair.chn, eliminated: false });
+        });
+        return shuffle(newItems);
+    }
+
+    function renderMatch() {
+        matchContainer.style.display = 'grid';
+        quizContainer.style.display = 'none';
+        matchContainer.innerHTML = '';
+        items.forEach(item => {
+            const chip = document.createElement('div');
+            chip.className = `word-card ${item.type}`;
+            if (item.eliminated) chip.classList.add('eliminated');
+            if (selectedId === item.id && !item.eliminated) chip.classList.add('selected');
+            chip.textContent = item.text;
+            chip.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (!gameActive || item.eliminated) return;
+                onMatchClick(item.id);
+            });
+            matchContainer.appendChild(chip);
+        });
+    }
+
+    function onMatchClick(clickId) {
+        if (!gameActive) return;
+        const clicked = items.find(i => i.id === clickId);
+        if (!clicked || clicked.eliminated) return;
+
+        if (selectedId === null) {
+            selectedId = clicked.id;
+            renderMatch();
+            statusMsg.innerText = `🔍 已选: ${clicked.text}`;
+            return;
+        }
+
+        const selected = items.find(i => i.id === selectedId);
+        if (!selected || selected.eliminated) {
+            selectedId = null;
+            renderMatch();
+            return;
+        }
+        if (selected.id === clicked.id) {
+            selectedId = null;
+            renderMatch();
+            statusMsg.innerText = '✨ 已取消选择';
+            return;
+        }
+
+        const isMatch = (selected.type !== clicked.type && selected.groupId === clicked.groupId);
+        if (isMatch) {
+            selected.eliminated = true;
+            clicked.eliminated = true;
+            score += 10;
+            completedPairs++;
+            updateScoreUI();
+            updateProgressUI();
+            playCorrect();
+            statusMsg.innerText = `✅ 配对成功 +10分 (${selected.text} ↔ ${clicked.text})`;
+            selectedId = null;
+            renderMatch();
+            if (items.every(i => i.eliminated === true)) gameVictory();
+        } else {
+            score = Math.max(0, score - 2);
+            updateScoreUI();
+            playWrong();
+            statusMsg.innerText = `❌ 配对错误 -2分 (${selected.text} ≠ ${clicked.text})`;
+            const allDivs = matchContainer.querySelectorAll('.word-card');
+            allDivs.forEach(div => {
+                if (div.textContent === selected.text || div.textContent === clicked.text) {
+                    div.classList.add('error-shake');
+                    setTimeout(() => div.classList.remove('error-shake'), 300);
+                }
+            });
+            selectedId = null;
+            renderMatch();
+        }
+    }
+
+    // ============================================================
+    // 2. 选择题 (quiz)
+    // ============================================================
+    let quizIndex = 0;
+    let quizWords = [];
+
+    function renderQuiz() {
+        matchContainer.style.display = 'none';
+        quizContainer.style.display = 'block';
+
+        if (quizIndex >= quizWords.length) {
+            quizContainer.innerHTML = `
+                <div class="text-center" style="padding:40px 0;">
+                    <div style="font-size:3rem;">🎉</div>
+                    <div style="font-size:1.2rem;font-weight:700;color:#e67e22;">全部完成！</div>
+                    <div style="color:#b45a2b;">得分: ${score}</div>
+                </div>
+            `;
+            gameVictory();
+            return;
+        }
+
+        const word = quizWords[quizIndex];
+        const options = shuffle([
+            { text: word.chn, correct: true },
+            ...sample(currentWords.filter(w => w.chn !== word.chn), 3).map(w => ({ text: w.chn, correct: false }))
+        ]);
+        quizAnswered = false;
+
+        quizContainer.innerHTML = `
+            <div class="quiz-word">${word.eng}</div>
+            <div class="quiz-options">
+                ${options.map((opt, i) => `
+                    <button class="quiz-opt" data-idx="${i}" data-correct="${opt.correct}">${opt.text}</button>
+                `).join('')}
+            </div>
+            <div class="text-center mt-6 text-sm" id="quizStatus">💡 选择正确的中文释义</div>
+        `;
+
+        const btns = quizContainer.querySelectorAll('.quiz-opt');
+        const status = quizContainer.querySelector('#quizStatus');
+        btns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (quizAnswered) return;
+                const isCorrect = btn.dataset.correct === 'true';
+                quizAnswered = true;
+                btns.forEach(b => b.disabled = true);
+                if (isCorrect) {
+                    score += 10;
+                    btn.classList.add('correct');
+                    status.textContent = '✅ 正确！+10分';
+                    playCorrect();
+                } else {
+                    score = Math.max(0, score - 2);
+                    btn.classList.add('wrong');
+                    const correctText = options.find(o => o.correct).text;
+                    status.textContent = `❌ 错误！-2分 正确答案: ${correctText}`;
+                    playWrong();
+                    btns.forEach(b => {
+                        if (b.dataset.correct === 'true') b.classList.add('correct');
+                    });
+                }
+                completedPairs++;
+                updateScoreUI();
+                updateProgressUI();
+                setTimeout(() => {
+                    quizIndex++;
+                    renderQuiz();
+                }, 1000);
+            });
+        });
+    }
+
+    // ============================================================
+    // 核心控制
+    // ============================================================
+    function resetGame() {
+        const ov = document.querySelector('.end-overlay');
+        if (ov) ov.remove();
+        const data = LECTURES[currentLectureId];
+        currentWords = data.words.map(p => ({ eng: p.eng, chn: p.chn }));
+        currentGameType = data.type || 'match';
+        selectedId = null;
+        score = 0;
+        completedPairs = 0;
+        gameActive = true;
+        quizIndex = 0;
+        quizAnswered = false;
+
+        updateScoreUI();
+        updateProgressUI();
+
+        if (currentGameType === 'match') {
+            items = buildMatchItems();
+            renderMatch();
+            statusMsg.innerText = '✨ 点击英文，再点中文配对 ✨';
+        } else if (currentGameType === 'quiz') {
+            quizWords = shuffle([...currentWords]);
+            renderQuiz();
+            statusMsg.innerText = '📝 选择题模式';
+        }
+    }
+
+    function switchLecture(lectureId) {
+        if (!LECTURES[lectureId]) return;
+        const ov = document.querySelector('.end-overlay');
+        if (ov) ov.remove();
+        currentLectureId = lectureId;
+        const data = LECTURES[currentLectureId];
+        currentWords = data.words.map(p => ({ eng: p.eng, chn: p.chn }));
+        currentGameType = data.type || 'match';
+        lectureTitle.innerHTML = `${data.title}`;
+        modeBadge.innerHTML = `${MODE_ICONS[currentGameType]} ${MODE_NAMES[currentGameType]}`;
+        lectureTag.innerHTML = `${data.title}`;
+        resetGame();
+        document.querySelectorAll('.lecture-btn').forEach(btn => {
+            btn.classList.toggle('active', parseInt(btn.dataset.lecture) === lectureId);
+        });
+    }
+
+    function buildLectureNav() {
+        navSlider.innerHTML = '';
+        Object.keys(LECTURES).sort((a,b)=>a-b).forEach(lid => {
+            const btn = document.createElement('button');
+            const data = LECTURES[lid];
+            const icon = MODE_ICONS[data.type] || '🎯';
+            btn.textContent = `${icon} 第${lid}讲`;
+            btn.classList.add('lecture-btn');
+            btn.dataset.lecture = lid;
+            btn.addEventListener('click', () => switchLecture(parseInt(lid)));
+            navSlider.appendChild(btn);
+        });
+    }
+
+    function init() {
+        buildLectureNav();
+        const urlParams = new URLSearchParams(window.location.search);
+        const lidParam = parseInt(urlParams.get('lecture'));
+        if (lidParam && LECTURES[lidParam]) currentLectureId = lidParam;
+        else currentLectureId = 1;
+        const data = LECTURES[currentLectureId];
+        currentWords = data.words.map(p => ({ eng: p.eng, chn: p.chn }));
+        currentGameType = data.type || 'match';
+        lectureTitle.innerHTML = `${data.title}`;
+        modeBadge.innerHTML = `${MODE_ICONS[currentGameType]} ${MODE_NAMES[currentGameType]}`;
+        lectureTag.innerHTML = `${data.title}`;
+        resetGame();
+        document.querySelectorAll('.lecture-btn').forEach(btn => {
+            btn.classList.toggle('active', parseInt(btn.dataset.lecture) === currentLectureId);
+        });
+        document.body.addEventListener('click', () => {
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+        }, { once: true });
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    resetBtn.onclick = resetGame;
+    init();
+</script>
+</body>
+</html>
